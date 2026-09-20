@@ -3,231 +3,140 @@
    22 ДАСГАЛ
 ===================================================== */
 
+const canvas = document.getElementById("canvas");
+const writingArea = document.getElementById("writingArea");
 
-/* =====================================================
-   ELEMENTS
-===================================================== */
+const lessonCard = document.querySelector(".lesson-card");
 
-const canvas =
-    document.getElementById("canvas");
+const guideCharacter = document.getElementById("guideCharacter");
+const guide = document.getElementById("guide");
 
-const writingArea =
-    document.getElementById("writingArea");
+const progress = document.getElementById("progress");
+const lessonTitle = document.getElementById("lessonTitle");
+const position = document.getElementById("position");
+const message = document.getElementById("message");
 
-const lessonCard =
-    document.querySelector(".lesson-card");
+const backButton = document.getElementById("backButton");
+const clearButton = document.getElementById("clearButton");
+const nextButton = document.getElementById("nextButton");
 
-const guideCharacter =
-    document.getElementById("guideCharacter");
-
-const guide =
-    document.getElementById("guide");
-
-const progress =
-    document.getElementById("progress");
-
-const lessonTitle =
-    document.getElementById("lessonTitle");
-
-const position =
-    document.getElementById("position");
-
-const message =
-    document.getElementById("message");
-
-const backButton =
-    document.getElementById("backButton");
-
-const clearButton =
-    document.getElementById("clearButton");
-
-const nextButton =
-    document.getElementById("nextButton");
-
-const ctx =
-    canvas.getContext("2d");
+const ctx = canvas.getContext("2d");
 
 
 /* =====================================================
    STATE
 ===================================================== */
 
-let points = [];
-
-let drawing = false;
-
 let currentLesson = 0;
+let drawing = false;
+let points = [];
 
 
 /* =====================================================
    MONGOLIAN UNICODE
 ===================================================== */
 
-/*
-   ᠊  = NIRUGU
-   ZWJ = холболт
-   FVS1 = Shift + 1
-*/
+const A  = "\u1820";
+const E  = "\u1821";
+const I  = "\u1822";
+const O  = "\u1823";
+const U  = "\u1824";
+const UE = "\u1826";
 
 const NIRUGU = "\u180A";
-
 const ZWJ = "\u200D";
-
 const FVS1 = "\u180B";
 
 
-const LETTERS = {
-
-    A: "\u1820",
-
-    E: "\u1821",
-
-    I: "\u1822",
-
-    O: "\u1823",
-
-    U: "\u1824",
-
-    UE: "\u1826"
-
-};
-
-
 /* =====================================================
-   BASIC LETTER FORMS
+   BASIC FORMS
 ===================================================== */
 
 function beginning(letter) {
-
-    return (
-        letter +
-        ZWJ
-    );
+    return letter + ZWJ;
 }
-
 
 function middle(letter) {
-
-    return (
-        NIRUGU +
-        letter +
-        NIRUGU
-    );
+    return NIRUGU + letter + NIRUGU;
 }
-
 
 function ending(letter) {
-
-    return (
-        NIRUGU +
-        letter
-    );
+    return NIRUGU + letter;
 }
 
 
 /* =====================================================
-   19–22 COMBINATIONS
+   19–22 SPECIAL FORMS
 ===================================================== */
 
-/*
-   19:
-   A + / + / + A + / + / + A + AShift1
-
-   20:
-   E + / + / + E + / + / + E + E + Shift1
-
-   21:
-   U + / + / + A + / + / + U + A + Shift1
-
-   22:
-   V + / + / + E + / + / + V + E + Shift1
-*/
-
-
-function newLesson1() {
-
+function lesson19Glyph() {
     return (
-        LETTERS.A +
+        A +
         NIRUGU +
         NIRUGU +
-        LETTERS.A +
+        A +
         NIRUGU +
         NIRUGU +
-        LETTERS.A +
-        LETTERS.A +
+        A +
+        A +
         FVS1
     );
 }
 
-
-function newLesson2() {
-
+function lesson20Glyph() {
     return (
-        LETTERS.E +
+        E +
         NIRUGU +
         NIRUGU +
-        LETTERS.E +
+        E +
         NIRUGU +
         NIRUGU +
-        LETTERS.E +
-        LETTERS.E +
+        E +
+        E +
         FVS1
     );
 }
 
-
-function newLesson3() {
-
+function lesson21Glyph() {
     return (
-        LETTERS.U +
+        U +
         NIRUGU +
         NIRUGU +
-        LETTERS.A +
+        A +
         NIRUGU +
         NIRUGU +
-        LETTERS.U +
-        LETTERS.A +
+        U +
+        A +
         FVS1
     );
 }
 
-
-function newLesson4() {
-
+function lesson22Glyph() {
     return (
-        LETTERS.UE +
+        UE +
         NIRUGU +
         NIRUGU +
-        LETTERS.E +
+        E +
         NIRUGU +
         NIRUGU +
-        LETTERS.UE +
-        LETTERS.E +
+        UE +
+        E +
         FVS1
     );
 }
 
 
 /* =====================================================
-   DISPLAY GLYPH
+   REMOVE VISUAL FVS / ! / SQUARE
 ===================================================== */
 
-/*
-   Зарим Dashitseden/font дээр
-   U+180B (FVS1) нь ! эсвэл дөрвөлжин
-   шиг харагддаг.
+function cleanDisplayGlyph(text) {
 
-   Тиймээс FVS1-ийг shaping-д ашиглана,
-   гэхдээ дэлгэцийн guide дээр тусдаа
-   тэмдэг болж харагдуулахгүй.
-*/
-
-function displayGlyph(glyph) {
-
-    return glyph.replace(
-        new RegExp(FVS1, "g"),
-        ""
-    );
+    return String(text || "")
+        .replace(/\u180B/g, "")
+        .replace(/!/g, "")
+        .replace(/□/g, "")
+        .trim();
 }
 
 
@@ -237,543 +146,200 @@ function displayGlyph(glyph) {
 
 const lessons = [
 
-    /* =================================================
-       1
-    ================================================= */
-
+    /* 1 */
     {
-        glyph: beginning(LETTERS.A),
-
-        vowel: "а",
-
+        glyph: beginning(A),
+        title: "Үгийн эхэнд ордог а-г бичээрэй",
         position: "Үгийн эхэнд",
-
-        title:
-            "Үгийн эхэнд ордог а-г бичээрэй",
-
-        keyboard:
-            "A + Shift + 2",
-
-        direction:
-            "↘ Эндээс эхлээд доош чиглэлээр бичнэ"
+        keyboard: "a + Shift + 2"
     },
 
-
-    /* =================================================
-       2
-    ================================================= */
-
+    /* 2 */
     {
-        glyph: middle(LETTERS.A),
-
-        vowel: "а",
-
+        glyph: middle(A),
+        title: "Үгийн дунд ордог а-г бичээрэй",
         position: "Үгийн дунд",
-
-        title:
-            "Үгийн дунд ордог а-г бичээрэй",
-
-        keyboard:
-            "/ + A + /",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + a + /"
     },
 
-
-    /* =================================================
-       3
-    ================================================= */
-
+    /* 3 */
     {
-        glyph: ending(LETTERS.A),
-
-        vowel: "а",
-
+        glyph: ending(A),
+        title: "Үгийн адагт ордог а-г бичээрэй",
         position: "Үгийн адагт",
-
-        title:
-            "Үгийн адагт ордог а-г бичээрэй",
-
-        keyboard:
-            "/ + A",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + a"
     },
 
-
-    /* =================================================
-       4
-    ================================================= */
-
+    /* 4 */
     {
-        glyph: beginning(LETTERS.E),
-
-        vowel: "э",
-
+        glyph: beginning(E),
+        title: "Үгийн эхэнд ордог э-г бичээрэй",
         position: "Үгийн эхэнд",
-
-        title:
-            "Үгийн эхэнд ордог э-г бичээрэй",
-
-        keyboard:
-            "E + Shift + 2",
-
-        direction:
-            "↘ Эндээс эхлээд доош чиглэлээр бичнэ"
+        keyboard: "e + Shift + 2"
     },
 
-
-    /* =================================================
-       5
-    ================================================= */
-
+    /* 5 */
     {
-        glyph: middle(LETTERS.E),
-
-        vowel: "э",
-
+        glyph: middle(E),
+        title: "Үгийн дунд ордог э-г бичээрэй",
         position: "Үгийн дунд",
-
-        title:
-            "Үгийн дунд ордог э-г бичээрэй",
-
-        keyboard:
-            "/ + E + /",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + e + /"
     },
 
-
-    /* =================================================
-       6
-    ================================================= */
-
+    /* 6 */
     {
-        glyph: ending(LETTERS.E),
-
-        vowel: "э",
-
+        glyph: ending(E),
+        title: "Үгийн адагт ордог э-г бичээрэй",
         position: "Үгийн адагт",
-
-        title:
-            "Үгийн адагт ордог э-г бичээрэй",
-
-        keyboard:
-            "/ + E",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + e"
     },
 
-
-    /* =================================================
-       7
-    ================================================= */
-
+    /* 7 */
     {
-        glyph: beginning(LETTERS.O),
-
-        vowel: "о",
-
+        glyph: beginning(O),
+        title: "Үгийн эхэнд ордог о-г бичээрэй",
         position: "Үгийн эхэнд",
-
-        title:
-            "Үгийн эхэнд ордог о-г бичээрэй",
-
-        keyboard:
-            "U + Shift + 2",
-
-        direction:
-            "↘ Эндээс эхлээд доош чиглэлээр бичнэ"
+        keyboard: "u + Shift + 2"
     },
 
-
-    /* =================================================
-       8
-    ================================================= */
-
+    /* 8 */
     {
-        glyph: middle(LETTERS.O),
-
-        vowel: "о",
-
+        glyph: middle(O),
+        title: "Үгийн дунд ордог о-г бичээрэй",
         position: "Үгийн дунд",
-
-        title:
-            "Үгийн дунд ордог о-г бичээрэй",
-
-        keyboard:
-            "/ + U + /",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + u + /"
     },
 
-
-    /* =================================================
-       9
-    ================================================= */
-
+    /* 9 */
     {
-        glyph: ending(LETTERS.O),
-
-        vowel: "о",
-
+        glyph: ending(O),
+        title: "Үгийн адагт ордог о-г бичээрэй",
         position: "Үгийн адагт",
-
-        title:
-            "Үгийн адагт ордог о-г бичээрэй",
-
-        keyboard:
-            "/ + U",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + u"
     },
 
-
-    /* =================================================
-       10
-    ================================================= */
-
+    /* 10 */
     {
-        glyph: beginning(LETTERS.U),
-
-        vowel: "у",
-
+        glyph: beginning(U),
+        title: "Үгийн эхэнд ордог у-г бичээрэй",
         position: "Үгийн эхэнд",
-
-        title:
-            "Үгийн эхэнд ордог у-г бичээрэй",
-
-        keyboard:
-            "U + Shift + 2",
-
-        direction:
-            "↘ Эндээс эхлээд доош чиглэлээр бичнэ"
+        keyboard: "u + Shift + 2"
     },
 
-
-    /* =================================================
-       11
-    ================================================= */
-
+    /* 11 */
     {
-        glyph: middle(LETTERS.U),
-
-        vowel: "у",
-
+        glyph: middle(U),
+        title: "Үгийн дунд ордог у-г бичээрэй",
         position: "Үгийн дунд",
-
-        title:
-            "Үгийн дунд ордог у-г бичээрэй",
-
-        keyboard:
-            "/ + U + /",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + u + /"
     },
 
-
-    /* =================================================
-       12
-    ================================================= */
-
+    /* 12 */
     {
-        glyph: ending(LETTERS.U),
-
-        vowel: "у",
-
+        glyph: ending(U),
+        title: "Үгийн адагт ордог у-г бичээрэй",
         position: "Үгийн адагт",
-
-        title:
-            "Үгийн адагт ордог у-г бичээрэй",
-
-        keyboard:
-            "/ + U",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + u"
     },
 
-
-    /* =================================================
-       13
-    ================================================= */
-
+    /* 13 */
     {
-        glyph: beginning(LETTERS.UE),
-
-        vowel: "ү",
-
+        glyph: beginning(UE),
+        title: "Үгийн эхэнд ордог ү-г бичээрэй",
         position: "Үгийн эхэнд",
-
-        title:
-            "Үгийн эхэнд ордог ү-г бичээрэй",
-
-        keyboard:
-            "V + Shift + 2",
-
-        direction:
-            "↘ Эндээс эхлээд доош чиглэлээр бичнэ"
+        keyboard: "v + Shift + 2"
     },
 
-
-    /* =================================================
-       14
-    ================================================= */
-
+    /* 14 */
     {
-        glyph: middle(LETTERS.UE),
-
-        vowel: "ү",
-
+        glyph: middle(UE),
+        title: "Үгийн дунд ордог ү-г бичээрэй",
         position: "Үгийн дунд",
-
-        title:
-            "Үгийн дунд ордог ү-г бичээрэй",
-
-        keyboard:
-            "/ + V + /",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + v + /"
     },
 
-
-    /* =================================================
-       15
-    ================================================= */
-
+    /* 15 */
     {
-        glyph: ending(LETTERS.UE),
-
-        vowel: "ү",
-
+        glyph: ending(UE),
+        title: "Үгийн адагт ордог ү-г бичээрэй",
         position: "Үгийн адагт",
-
-        title:
-            "Үгийн адагт ордог ү-г бичээрэй",
-
-        keyboard:
-            "/ + V",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + v"
     },
 
-
-    /* =================================================
-       16
-    ================================================= */
-
+    /* 16 */
     {
-        glyph: beginning(LETTERS.I),
-
-        vowel: "и",
-
+        glyph: beginning(I),
+        title: "Үгийн эхэнд ордог и-г бичээрэй",
         position: "Үгийн эхэнд",
-
-        title:
-            "Үгийн эхэнд ордог и-г бичээрэй",
-
-        keyboard:
-            "I + Shift + 2",
-
-        direction:
-            "↘ Эндээс эхлээд доош чиглэлээр бичнэ"
+        keyboard: "i + Shift + 2"
     },
 
-
-    /* =================================================
-       17
-    ================================================= */
-
+    /* 17 */
     {
-        glyph: middle(LETTERS.I),
-
-        vowel: "и",
-
+        glyph: middle(I),
+        title: "Үгийн дунд ордог и-г бичээрэй",
         position: "Үгийн дунд",
-
-        title:
-            "Үгийн дунд ордог и-г бичээрэй",
-
-        keyboard:
-            "/ + I + /",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + i + /"
     },
 
-
-    /* =================================================
-       18
-    ================================================= */
-
+    /* 18 */
     {
-        glyph: ending(LETTERS.I),
-
-        vowel: "и",
-
+        glyph: ending(I),
+        title: "Үгийн адагт ордог и-г бичээрэй",
         position: "Үгийн адагт",
-
-        title:
-            "Үгийн адагт ордог и-г бичээрэй",
-
-        keyboard:
-            "/ + I",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "/ + i"
     },
 
-
-    /* =================================================
-       19
-    ================================================= */
-
+    /* 19 */
     {
-        glyph: newLesson1(),
-
-        vowel: "а",
-
+        glyph: lesson19Glyph(),
+        title: "Энэ а-г зөв дарааллаар бичээрэй",
         position: "Холбоо үсэг",
-
-        title:
-            "Энэ а-г зөв дарааллаар бичээрэй",
-
-        keyboard:
-            "A + / + / + A + / + / + A + A + Shift 1",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "a + / + / + a + / + / + a + a + Shift 1"
     },
 
-
-    /* =================================================
-       20
-    ================================================= */
-
+    /* 20 */
     {
-        glyph: newLesson2(),
-
-        vowel: "э",
-
+        glyph: lesson20Glyph(),
+        title: "Энэ э-г зөв дарааллаар бичээрэй",
         position: "Холбоо үсэг",
-
-        title:
-            "Энэ э-г зөв дарааллаар бичээрэй",
-
-        keyboard:
-            "E + / + / + E + / + / + E + E + Shift 1",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "e + / + / + e + / + / + e + e + Shift 1"
     },
 
-
-    /* =================================================
-       21
-    ================================================= */
-
+    /* 21 */
     {
-        glyph: newLesson3(),
-
-        vowel: "у",
-
+        glyph: lesson21Glyph(),
+        title: "Энэ у-г зөв дарааллаар бичээрэй",
         position: "Холбоо үсэг",
-
-        title:
-            "Энэ у-г зөв дарааллаар бичээрэй",
-
-        keyboard:
-            "U + / + / + A + / + / + U + A + Shift 1",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "u + / + / + a + / + / + u + a + Shift 1"
     },
 
-
-    /* =================================================
-       22
-    ================================================= */
-
+    /* 22 */
     {
-        glyph: newLesson4(),
-
-        vowel: "ү",
-
+        glyph: lesson22Glyph(),
+        title: "Энэ ү-г зөв дарааллаар бичээрэй",
         position: "Холбоо үсэг",
-
-        title:
-            "Энэ ү-г зөв дарааллаар бичээрэй",
-
-        keyboard:
-            "V + / + / + E + / + / + V + E + Shift 1",
-
-        direction:
-            "↘ Дээрээс доош чиглэлээр бичнэ"
+        keyboard: "v + / + / + e + / + / + v + e + Shift 1"
     }
 
 ];
 
 
 /* =====================================================
-   LAST 4 LAYOUT
-===================================================== */
-
-function updateLessonLayout() {
-
-    if (currentLesson >= 18) {
-
-        lessonCard.classList.add(
-            "long-lesson"
-        );
-
-    } else {
-
-        lessonCard.classList.remove(
-            "long-lesson"
-        );
-    }
-}
-
-
-/* =====================================================
-   CANVAS SIZE
+   CANVAS
 ===================================================== */
 
 function resizeCanvas() {
 
-    const rect =
-        writingArea.getBoundingClientRect();
+    const rect = writingArea.getBoundingClientRect();
 
-    const dpr =
-        window.devicePixelRatio || 1;
+    const dpr = window.devicePixelRatio || 1;
 
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
 
-    canvas.width =
-        Math.round(
-            rect.width * dpr
-        );
-
-    canvas.height =
-        Math.round(
-            rect.height * dpr
-        );
-
-
-    canvas.style.width =
-        rect.width + "px";
-
-    canvas.style.height =
-        rect.height + "px";
-
+    canvas.style.width = rect.width + "px";
+    canvas.style.height = rect.height + "px";
 
     ctx.setTransform(
         dpr,
@@ -784,18 +350,10 @@ function resizeCanvas() {
         0
     );
 
-
-    ctx.lineCap =
-        "round";
-
-    ctx.lineJoin =
-        "round";
-
-    ctx.lineWidth =
-        7;
-
-    ctx.strokeStyle =
-        "#58cc02";
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = 7;
+    ctx.strokeStyle = "#58cc02";
 }
 
 
@@ -805,114 +363,81 @@ function resizeCanvas() {
 
 function showLesson() {
 
-    const lesson =
-        lessons[currentLesson];
-
-
-    updateLessonLayout();
-
+    const lesson = lessons[currentLesson];
 
     progress.textContent =
         `${currentLesson + 1} / ${lessons.length}`;
 
-
-    /*
-       FVS1-ийг display дээрээс нууж,
-       ! / дөрвөлжин гаргахгүй.
-    */
-
-    const safeGlyph =
-        displayGlyph(
-            lesson.glyph
-        );
-
+    const visibleGlyph =
+        cleanDisplayGlyph(lesson.glyph);
 
     guideCharacter.textContent =
-        safeGlyph;
+        visibleGlyph;
 
     guide.textContent =
-        safeGlyph;
-
+        visibleGlyph;
 
     lessonTitle.textContent =
         lesson.title;
 
-
     position.textContent =
         lesson.position;
 
-
     message.className = "";
 
-
-    message.textContent =
-        `${lesson.direction} · үзэг салгахгүй · 45° налуу`;
-
-
-    clearCanvas();
-
-
-    /* PREVIOUS */
+    message.innerHTML =
+        `↘ Эндээс эхлээд доош чиглэлээр бичнэ
+        · үзэг салгахгүй
+        · 45° налуу`;
 
     if (currentLesson === 0) {
 
-        backButton.disabled =
-            true;
-
-        backButton.style.opacity =
-            "0.45";
+        backButton.disabled = true;
+        backButton.style.opacity = "0.45";
 
     } else {
 
-        backButton.disabled =
-            false;
-
-        backButton.style.opacity =
-            "1";
+        backButton.disabled = false;
+        backButton.style.opacity = "1";
     }
-
-
-    /* NEXT */
 
     if (
         currentLesson ===
         lessons.length - 1
     ) {
 
-        nextButton.textContent =
-            "✓";
+        nextButton.textContent = "✓";
 
     } else {
 
-        nextButton.textContent =
-            "→";
+        nextButton.textContent = "→";
     }
 
+    if (currentLesson >= 18) {
 
-    /*
-       Layout бүрэн шинэчлэгдсэний дараа
-       canvas-ийн хэмжээг дахин авна.
-    */
+        lessonCard.classList.add("long-lesson");
 
-    requestAnimationFrame(
-        function () {
+    } else {
 
-            resizeCanvas();
+        lessonCard.classList.remove("long-lesson");
+    }
 
-        }
-    );
+    clearCanvas();
+
+    requestAnimationFrame(() => {
+        resizeCanvas();
+    });
 }
 
 
 /* =====================================================
-   CLEAR CANVAS
+   CLEAR
 ===================================================== */
 
 function clearCanvas() {
 
     const rect =
         writingArea.getBoundingClientRect();
-
 
     ctx.clearRect(
         0,
@@ -921,22 +446,18 @@ function clearCanvas() {
         rect.height
     );
 
-
     points = [];
-
-
     drawing = false;
-
-
-    message.className = "";
-
 
     const lesson =
         lessons[currentLesson];
 
+    message.className = "";
 
-    message.textContent =
-        `${lesson.direction} · үзэг салгахгүй · 45° налуу`;
+    message.innerHTML =
+        `↘ Эндээс эхлээд доош чиглэлээр бичнэ
+        · үзэг салгахгүй
+        · 45° налуу`;
 }
 
 
@@ -949,23 +470,15 @@ function getPoint(event) {
     const rect =
         canvas.getBoundingClientRect();
 
-
     return {
-
-        x:
-            event.clientX -
-            rect.left,
-
-        y:
-            event.clientY -
-            rect.top
-
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
     };
 }
 
 
 /* =====================================================
-   POINTER DOWN
+   DRAW START
 ===================================================== */
 
 canvas.addEventListener(
@@ -974,38 +487,29 @@ canvas.addEventListener(
 
         event.preventDefault();
 
-
         drawing = true;
-
 
         canvas.setPointerCapture(
             event.pointerId
         );
 
-
         const point =
             getPoint(event);
 
-
-        points = [
-            point
-        ];
-
+        points = [point];
 
         ctx.beginPath();
-
 
         ctx.moveTo(
             point.x,
             point.y
         );
-
     }
 );
 
 
 /* =====================================================
-   POINTER MOVE
+   DRAW
 ===================================================== */
 
 canvas.addEventListener(
@@ -1014,42 +518,32 @@ canvas.addEventListener(
 
         if (!drawing) return;
 
-
         event.preventDefault();
-
 
         const point =
             getPoint(event);
 
-
-        points.push(
-            point
-        );
-
+        points.push(point);
 
         ctx.lineTo(
             point.x,
             point.y
         );
 
-
         ctx.stroke();
-
     }
 );
 
 
 /* =====================================================
-   STOP DRAWING
+   DRAW END
 ===================================================== */
 
 function stopDrawing(event) {
 
     if (!drawing) return;
 
-
     drawing = false;
-
 
     try {
 
@@ -1059,7 +553,6 @@ function stopDrawing(event) {
 
     } catch (error) {}
 
-
     checkWriting();
 }
 
@@ -1068,7 +561,6 @@ canvas.addEventListener(
     "pointerup",
     stopDrawing
 );
-
 
 canvas.addEventListener(
     "pointercancel",
@@ -1084,18 +576,13 @@ function checkWriting() {
 
     if (points.length < 8) {
 
-        showWrong(
-            "Дахин оролдоорой"
-        );
+        showWrong();
 
         return;
     }
 
 
-    /* TOTAL LENGTH */
-
     let totalLength = 0;
-
 
     for (
         let i = 1;
@@ -1107,11 +594,9 @@ function checkWriting() {
             points[i].x -
             points[i - 1].x;
 
-
         const dy =
             points[i].y -
             points[i - 1].y;
-
 
         totalLength +=
             Math.sqrt(
@@ -1123,59 +608,30 @@ function checkWriting() {
 
     if (totalLength < 45) {
 
-        showWrong(
-            "Дахин оролдоорой"
-        );
+        showWrong();
 
         return;
     }
 
 
-    /* BOUNDING BOX */
-
     let minX = Infinity;
-
     let maxX = -Infinity;
-
     let minY = Infinity;
-
     let maxY = -Infinity;
 
 
-    for (const point of points) {
+    for (const p of points) {
 
-        minX =
-            Math.min(
-                minX,
-                point.x
-            );
+        minX = Math.min(minX, p.x);
+        maxX = Math.max(maxX, p.x);
 
-
-        maxX =
-            Math.max(
-                maxX,
-                point.x
-            );
-
-
-        minY =
-            Math.min(
-                minY,
-                point.y
-            );
-
-
-        maxY =
-            Math.max(
-                maxY,
-                point.y
-            );
+        minY = Math.min(minY, p.y);
+        maxY = Math.max(maxY, p.y);
     }
 
 
     const width =
         maxX - minX;
-
 
     const height =
         maxY - minY;
@@ -1186,34 +642,33 @@ function checkWriting() {
         height < 20
     ) {
 
-        showWrong(
-            "Дахин оролдоорой"
-        );
+        showWrong();
 
         return;
     }
 
 
     /*
-       Хэт хэвтээ зураас
+       Маш их хэвтээ зурсан
     */
 
     if (
-        width > height * 4 &&
-        width > 140
+        width > height * 5 &&
+        width > 150
     ) {
 
-        showWrong(
-            "Дахин оролдоорой"
-        );
+        showWrong();
 
         return;
     }
 
 
+    /*
+       Хэт тас далий
+    */
+
     const first =
         points[0];
-
 
     const last =
         points[
@@ -1221,33 +676,25 @@ function checkWriting() {
         ];
 
 
-    const verticalMovement =
+    const dx =
+        Math.abs(
+            last.x -
+            first.x
+        );
+
+    const dy =
         Math.abs(
             last.y -
             first.y
         );
 
 
-    const horizontalMovement =
-        Math.abs(
-            last.x -
-            first.x
-        );
-
-
-    /*
-       Маш их хэвтээ хөдөлгөөн
-    */
-
     if (
-        horizontalMovement >
-            verticalMovement * 5 &&
-        horizontalMovement > 150
+        dx > dy * 6 &&
+        dx > 180
     ) {
 
-        showWrong(
-            "Дахин оролдоорой"
-        );
+        showWrong();
 
         return;
     }
@@ -1258,7 +705,7 @@ function checkWriting() {
 
 
 /* =====================================================
-   CORRECT
+   CORRECT / WRONG
 ===================================================== */
 
 function showCorrect() {
@@ -1271,17 +718,13 @@ function showCorrect() {
 }
 
 
-/* =====================================================
-   WRONG
-===================================================== */
-
-function showWrong(text) {
+function showWrong() {
 
     message.className =
         "wrong";
 
     message.textContent =
-        text;
+        "Дахин оролдоорой";
 }
 
 
@@ -1310,7 +753,6 @@ nextButton.addEventListener(
             message.textContent =
                 "🎉 Бүх дасгалыг дуусгалаа!";
         }
-
     }
 );
 
@@ -1323,15 +765,12 @@ backButton.addEventListener(
     "click",
     function () {
 
-        if (
-            currentLesson > 0
-        ) {
+        if (currentLesson > 0) {
 
             currentLesson--;
 
             showLesson();
         }
-
     }
 );
 
@@ -1345,13 +784,12 @@ clearButton.addEventListener(
     function () {
 
         clearCanvas();
-
     }
 );
 
 
 /* =====================================================
-   WINDOW RESIZE
+   RESIZE
 ===================================================== */
 
 window.addEventListener(
@@ -1359,14 +797,9 @@ window.addEventListener(
     function () {
 
         resizeCanvas();
-
     }
 );
 
-
-/* =====================================================
-   ORIENTATION CHANGE
-===================================================== */
 
 window.addEventListener(
     "orientationchange",
@@ -1374,9 +807,8 @@ window.addEventListener(
 
         setTimeout(
             resizeCanvas,
-            100
+            150
         );
-
     }
 );
 
@@ -1391,6 +823,5 @@ requestAnimationFrame(
         resizeCanvas();
 
         showLesson();
-
     }
 );
