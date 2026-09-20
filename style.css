@@ -1,0 +1,724 @@
+@font-face {
+    font-family: "Dashitseden";
+    src: url("cmdashitseden.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    overflow: hidden;
+
+    color: #2d2924;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            rgba(235, 244, 232, 0.18),
+            rgba(235, 244, 232, 0.18)
+        ),
+        url("background.png");
+
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+/* =========================
+   APP
+========================= */
+
+.app {
+    width: 100%;
+    height: 100vh;
+
+    max-width: 920px;
+
+    margin: 0 auto;
+
+    padding:
+        clamp(8px, 2vh, 18px)
+        clamp(10px, 2vw, 24px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* =========================
+   TITLE
+========================= */
+
+.title-box {
+    text-align: center;
+
+    margin-bottom:
+        clamp(4px, 0.8vh, 8px);
+}
+
+.title-box h1 {
+    margin: 0;
+
+    color: #302a23;
+
+    font-size:
+        clamp(23px, 3.2vh, 32px);
+
+    line-height: 1.05;
+
+    font-weight: 900;
+}
+
+.title-box p {
+    margin: 3px 0 0;
+
+    color: #756d63;
+
+    font-size:
+        clamp(11px, 1.7vh, 15px);
+
+    font-weight: 600;
+}
+
+/* =========================
+   LESSON CARD
+========================= */
+
+.lesson-card {
+    position: relative;
+
+    width: 100%;
+
+    background:
+        rgba(255, 253, 247, 0.97);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.95);
+
+    border-radius:
+        clamp(18px, 3vw, 28px);
+
+    padding:
+        clamp(10px, 1.5vh, 18px)
+        clamp(14px, 2.5vw, 28px)
+        clamp(10px, 1.4vh, 16px);
+
+    box-shadow:
+        0 18px 45px rgba(48, 40, 30, 0.20),
+        0 2px 8px rgba(48, 40, 30, 0.08);
+
+    overflow: hidden;
+}
+
+/* =========================
+   MONGOL ORNAMENT
+========================= */
+
+.lesson-card::before {
+    content: "ᠵ ᠵ ᠵ ᠵ ᠵ";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    top: 0;
+
+    height: 18px;
+
+    text-align: center;
+
+    overflow: hidden;
+
+    color: rgba(116, 79, 36, 0.15);
+
+    font-family: "Dashitseden", serif;
+
+    font-size: 20px;
+
+    letter-spacing: 15px;
+
+    pointer-events: none;
+}
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress {
+    text-align: center;
+
+    margin: 2px 0 0;
+
+    color: #81776b;
+
+    font-size:
+        clamp(11px, 1.6vh, 14px);
+
+    font-weight: 800;
+}
+
+/* =========================
+   TOP LETTER
+========================= */
+
+.guide-character {
+    height:
+        clamp(52px, 8vh, 82px);
+
+    margin:
+        -2px auto
+        0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-family: "Dashitseden", serif;
+
+    font-size:
+        clamp(55px, 9vh, 85px);
+
+    line-height: 1;
+
+    color: #29241f;
+
+    transform: rotate(90deg);
+
+    pointer-events: none;
+}
+
+/* =========================
+   LESSON TITLE
+========================= */
+
+.lesson-title {
+    margin:
+        0
+        0
+        5px;
+
+    text-align: center;
+
+    color: #29251f;
+
+    font-size:
+        clamp(17px, 2.6vh, 23px);
+
+    line-height: 1.15;
+
+    font-weight: 900;
+}
+
+/* =========================
+   POSITION
+========================= */
+
+.position {
+    width: fit-content;
+
+    margin:
+        0
+        auto
+        7px;
+
+    padding:
+        5px
+        13px;
+
+    border-radius: 999px;
+
+    background: #e9f7df;
+
+    color: #4e9c29;
+
+    font-size:
+        clamp(11px, 1.55vh, 14px);
+
+    font-weight: 800;
+}
+
+/* =========================
+   WRITING AREA
+========================= */
+
+.writing-area {
+    position: relative;
+
+    width: 100%;
+
+    height:
+        min(39vh, 355px);
+
+    min-height: 235px;
+
+    overflow: hidden;
+
+    border:
+        2px solid #e4dfd6;
+
+    border-radius:
+        clamp(14px, 2vw, 20px);
+
+    background-color: #fffdf8;
+
+    background-image:
+        linear-gradient(
+            to bottom,
+            rgba(90, 75, 55, 0.055) 1px,
+            transparent 1px
+        );
+
+    background-size:
+        100% 47px;
+}
+
+/* =========================
+   GUIDE
+========================= */
+
+.guide {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 78%;
+    max-width: 78%;
+    height: 86%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(90deg);
+
+    transform-origin: center center;
+
+    z-index: 2;
+
+    pointer-events: none;
+
+    font-family: "Dashitseden", serif;
+
+    /*
+       Үндсэн дасгалууд
+    */
+    font-size:
+        min(27vh, 220px);
+
+    line-height: 0.9;
+
+    color:
+        rgba(70, 65, 58, 0.10);
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: clip;
+}
+
+/* =========================
+   19–22 ДУГААР ДАСГАЛ
+   УРТ ҮСГИЙГ ЖИЖИГРҮҮЛНЭ
+========================= */
+
+.lesson-card.long-lesson .guide {
+    width: 72%;
+    max-width: 72%;
+
+    height: 80%;
+
+    font-size:
+        clamp(45px, 7vh, 78px);
+
+    line-height: 0.85;
+
+    overflow: hidden;
+}
+
+/* =========================
+   ХЭРЭВ JS ДЭЭР
+   long-lesson CLASS БАЙХГҮЙ БОЛ
+   УРТ GUIDE-Г БАГТААХ
+========================= */
+
+.guide {
+    max-width: 78vw;
+}
+
+/* =========================
+   RED DOT
+   БҮРЭН УСТГАСАН
+========================= */
+
+.start-dot {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* =========================
+   CANVAS
+========================= */
+
+#canvas {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 5;
+
+    touch-action: none;
+
+    cursor: crosshair;
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+#message {
+    min-height:
+        clamp(20px, 2.8vh, 26px);
+
+    margin:
+        5px 2px 6px;
+
+    text-align: center;
+
+    color: #6e665d;
+
+    font-size:
+        clamp(11px, 1.6vh, 14px);
+
+    line-height: 1.3;
+
+    font-weight: 600;
+
+    overflow: hidden;
+}
+
+#message.correct {
+    color: #4fae22;
+}
+
+#message.wrong {
+    color: #e04444;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.bottom-controls {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+}
+
+.bottom-controls button {
+    min-height:
+        clamp(36px, 5.5vh, 45px);
+
+    border: 0;
+
+    border-radius: 13px;
+
+    padding:
+        0
+        clamp(14px, 2vw, 22px);
+
+    background: #58cc02;
+
+    color: white;
+
+    font-size:
+        clamp(13px, 1.9vh, 16px);
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 0 #43a900;
+
+    transition:
+        transform 0.12s ease,
+        filter 0.12s ease;
+}
+
+.bottom-controls button:hover {
+    filter: brightness(1.05);
+}
+
+.bottom-controls button:active {
+    transform: translateY(2px);
+}
+
+.bottom-controls .control-button {
+    width:
+        clamp(42px, 6vw, 52px);
+
+    padding: 0;
+
+    background: #eeeeee;
+
+    color: #333;
+
+    font-size:
+        clamp(19px, 3vh, 24px);
+
+    box-shadow:
+        0 2px 0 #d0d0d0;
+}
+
+/* =========================
+   SHORT MAC / 75%
+========================= */
+
+@media (max-height: 750px) and (min-width: 601px) {
+
+    .app {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    .title-box {
+        margin-bottom: 2px;
+    }
+
+    .title-box h1 {
+        font-size: 24px;
+    }
+
+    .title-box p {
+        font-size: 10px;
+    }
+
+    .guide-character {
+        height: 52px;
+        font-size: 64px;
+    }
+
+    .lesson-title {
+        font-size: 18px;
+        margin-bottom: 3px;
+    }
+
+    .position {
+        padding: 4px 11px;
+        margin-bottom: 4px;
+    }
+
+    .writing-area {
+        height: 285px;
+        min-height: 0;
+    }
+
+    .guide {
+        width: 76%;
+        max-width: 76%;
+
+        height: 78%;
+
+        font-size: 175px;
+    }
+
+    /* 19–22 */
+    .lesson-card.long-lesson .guide {
+        width: 68%;
+        max-width: 68%;
+
+        height: 72%;
+
+        font-size: 58px;
+    }
+
+    #message {
+        margin:
+            3px
+            2px
+            4px;
+
+        font-size: 11px;
+    }
+
+    .bottom-controls button {
+        min-height: 33px;
+    }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    body {
+        height: auto;
+
+        min-height: 100vh;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        background-attachment: scroll;
+    }
+
+    .app {
+        height: auto;
+
+        min-height: 100vh;
+
+        padding:
+            10px
+            8px
+            18px;
+
+        justify-content: flex-start;
+    }
+
+    .title-box {
+        margin-bottom: 6px;
+    }
+
+    .title-box h1 {
+        font-size: 27px;
+    }
+
+    .lesson-card {
+        padding: 12px;
+
+        border-radius: 21px;
+    }
+
+    .guide-character {
+        height: 75px;
+
+        font-size: 80px;
+    }
+
+    .lesson-title {
+        font-size: 19px;
+    }
+
+    .writing-area {
+        height: 52vh;
+
+        min-height: 300px;
+        max-height: 410px;
+    }
+
+    .guide {
+        width: 76%;
+        max-width: 76%;
+
+        height: 82%;
+
+        font-size: 210px;
+    }
+
+    /* 19–22 mobile */
+    .lesson-card.long-lesson .guide {
+        width: 65%;
+        max-width: 65%;
+
+        height: 72%;
+
+        font-size: 52px;
+    }
+
+    #message {
+        font-size: 13px;
+
+        margin:
+            7px
+            2px
+            9px;
+    }
+
+    .bottom-controls button {
+        min-height: 43px;
+
+        padding:
+            0
+            15px;
+    }
+
+    .bottom-controls .control-button {
+        width: 46px;
+    }
+}
+
+/* =========================
+   VERY SMALL PHONES
+========================= */
+
+@media (max-width: 380px) {
+
+    .lesson-card {
+        padding: 10px;
+    }
+
+    .writing-area {
+        height: 390px;
+
+        min-height: 290px;
+    }
+
+    .guide {
+        width: 72%;
+        max-width: 72%;
+
+        font-size: 185px;
+    }
+
+    .lesson-card.long-lesson .guide {
+        width: 62%;
+        max-width: 62%;
+
+        font-size: 45px;
+    }
+
+    .lesson-title {
+        font-size: 18px;
+    }
+
+    .bottom-controls {
+        gap: 6px;
+    }
+
+    .bottom-controls button {
+        padding: 0 12px;
+    }
+
+    .bottom-controls .control-button {
+        width: 44px;
+    }
+}

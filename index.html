@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="mn">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Монгол бичиг – Бичгийн дасгал</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css?v=30"
+    >
+</head>
+
+
+<body>
+
+    <main class="app">
+
+        <header class="title-box">
+
+            <h1>Монгол бичиг</h1>
+
+            <p>Бичгийн дасгал</p>
+
+        </header>
+
+
+        <section class="lesson-card">
+
+            <!-- PROGRESS -->
+
+            <div
+                class="progress"
+                id="progress"
+            >
+                1 / 22
+            </div>
+
+
+            <!-- LARGE MONGOLIAN CHARACTER -->
+
+            <div
+                class="guide-character"
+                id="guideCharacter"
+            ></div>
+
+
+            <!-- LESSON TITLE -->
+
+            <h2
+                class="lesson-title"
+                id="lessonTitle"
+            >
+                Үгийн эхэнд ордог а-г бичээрэй
+            </h2>
+
+
+            <!-- POSITION -->
+
+            <div
+                class="position"
+                id="position"
+            >
+                Үгийн эхэнд
+            </div>
+
+
+            <!-- WRITING AREA -->
+
+            <div
+                class="writing-area"
+                id="writingArea"
+            >
+
+                <div
+                    class="guide"
+                    id="guide"
+                ></div>
+
+
+                <canvas
+                    id="canvas"
+                ></canvas>
+
+            </div>
+
+
+            <!-- MESSAGE -->
+
+            <p id="message">
+                ↘ Эндээс эхлээд доош чиглэлээр бичнэ
+                · үзэг салгахгүй
+                · 45° налуу
+            </p>
+
+
+            <!-- CONTROLS -->
+
+            <div class="bottom-controls">
+
+                <button
+                    type="button"
+                    class="control-button"
+                    id="backButton"
+                    aria-label="Өмнөх дасгал"
+                >
+                    ←
+                </button>
+
+
+                <button
+                    type="button"
+                    id="clearButton"
+                >
+                    Дахин оролдох
+                </button>
+
+
+                <button
+                    type="button"
+                    class="control-button"
+                    id="nextButton"
+                    aria-label="Дараагийн дасгал"
+                >
+                    →
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="app.js?v=30"></script>
+
+</body>
+
+</html>
